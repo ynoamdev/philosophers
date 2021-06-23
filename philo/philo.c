@@ -85,7 +85,7 @@ void	*print(void *i)
 	// {
 		// pthread_mutex_lock(&(g_philo->print));
 		gettimeofday(&current_time, NULL);
-		printf("[%d] = %ld\n", x, (long int)current_time.tv_usec );
+		printf("[%d] = %lld && %lld\n", x, (long long int)current_time.tv_sec , (long long int)current_time.tv_usec );
 		// pthread_mutex_unlock(&(g_philo->print));
 	// }
 	return (NULL);
