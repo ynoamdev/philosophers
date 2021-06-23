@@ -15,6 +15,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <pthread.h>
+# include <sys/time.h>
 
 int	ft_isdigit(int c);
 int	input_error(char *av[]);

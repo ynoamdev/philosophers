@@ -78,12 +78,16 @@ void	init_data(char *av[])
 void	*print(void *i)
 {
 	int x;
+	struct timeval current_time;
 
 	x = *(int*)i;
 	// while(1)
-	pthread_mutex_lock(&(g_philo->print));
-		printf("thread number %d\n", x);
-	pthread_mutex_unlock(&(g_philo->print));
+	// {
+		// pthread_mutex_lock(&(g_philo->print));
+		gettimeofday(&current_time, NULL);
+		printf("[%d] = %ld\n", x, (long int)current_time.tv_usec );
+		// pthread_mutex_unlock(&(g_philo->print));
+	// }
 	return (NULL);
 }
 
@@ -120,6 +124,7 @@ int	main(int ac, char *av[])
 		init_data(av);
 		create_thread();
 		// join_thread();
+		while(1);
 	}
 	else
 		printf("error\n");
