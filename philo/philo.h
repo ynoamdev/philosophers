@@ -23,11 +23,13 @@ int ft_atoi(const char *str);
 typedef struct s_philo
 {
     int philo_num;
+    pthread_t *threads;
     pthread_mutex_t *forks;
     int time_to_die;
     int time_to_eat;
     int time_to_sleep;
     int num_of_tm_philo_must_eat;
+    pthread_mutex_t print;
 }   t_philo;
 
 t_philo *g_philo;
