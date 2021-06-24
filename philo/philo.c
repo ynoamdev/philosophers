@@ -81,13 +81,8 @@ void	*print(void *i)
 	struct timeval current_time;
 
 	x = *(int*)i;
-	// while(1)
-	// {
-		// pthread_mutex_lock(&(g_philo->print));
-		gettimeofday(&current_time, NULL);
-		printf("[%d] = %lld && %lld\n", x, (long long int)current_time.tv_sec , (long long int)current_time.tv_usec );
-		// pthread_mutex_unlock(&(g_philo->print));
-	// }
+	gettimeofday(&current_time, NULL);
+	printf("[%d] = %lld && %lld\n", x, (long long int)current_time.tv_sec, (long long int)current_time.tv_usec);
 	return (NULL);
 }
 
