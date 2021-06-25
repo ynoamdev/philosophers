@@ -13,6 +13,7 @@
 #ifndef PHILO_H
 # define PHILO_H
 # include <stdio.h>
+# include <unistd.h>
 # include <stdlib.h>
 # include <pthread.h>
 # include <sys/time.h>
@@ -30,7 +31,8 @@ typedef struct s_philo
     int time_to_eat;
     int time_to_sleep;
     int num_of_tm_philo_must_eat;
-    pthread_mutex_t print;
+    int time;
+    pthread_mutex_t lunch_thread;
 }   t_philo;
 
 t_philo *g_philo;

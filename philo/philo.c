@@ -72,28 +72,40 @@ void	init_data(char *av[])
 	mtx = 0;
 	while (mtx < g_philo->philo_num)
 		pthread_mutex_init(&(g_philo->forks[mtx++]), NULL);
-	pthread_mutex_init(&(g_philo->print), NULL);
+	pthread_mutex_init(&(g_philo->lunch_thread), NULL);
+	g_philo->time = 0;
+}
+void take_fork_print(int i)
+{
+	struct timeval tm;
+
+	gettimeofday(&tm, NULL);
+	if (g_philo->time == 0)
+	{
+		g_philo->time = tm.tv_usec;
+		printf("%ld %d has taken a fork\n", tm.tv_usec - tm.tv_usec, i + 1);
+		return ;
+	}
+	printf("%ld %d has taken a fork\n", tm.tv_usec - g_philo->time, i + 1);
 }
 
-void	*print(void *i)
+void	*lunch_ft(void *x)
 {
-	int x;
-	struct timeval current_time;
+	int i;
 
-	x = *(int*)i;
-	// while(1)
-	// {
-		// pthread_mutex_lock(&(g_philo->print));
-		gettimeofday(&current_time, NULL);
-		printf("[%d] = %lld && %lld\n", x, (long long int)current_time.tv_sec , (long long int)current_time.tv_usec );
-		// pthread_mutex_unlock(&(g_philo->print));
-	// }
+	i = *(int*)x;
+	pthread_mutex_lock(&(g_philo->lunch_thread));
+	pthread_mutex_lock(&(g_philo->forks[i]));
+	take_fork_print(i);
+	pthread_mutex_lock(&(g_philo->forks[i]));
+
 	return (NULL);
 }
 
 void		join_thread(void)
 {
 	int i;
+	usleep(10);
 
 	i = 0;
 	while(i < g_philo->philo_num)
@@ -111,10 +123,11 @@ void		create_thread(void)
 	{
 		int *x = malloc(sizeof(int));
 		*x = i;
-		pthread_create(&(g_philo->threads[i]), NULL, &print, x);
+		pthread_create(&(g_philo->threads[i]), NULL, &lunch_ft, &x);
 		i++;
 	}
 }
+
 int	main(int ac, char *av[])
 {
 	if (ac == 6 || ac == 5)
