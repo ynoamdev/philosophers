@@ -55,6 +55,7 @@ int	ft_atoi(const char *str)
 	return (number * sign);
 }
 
+
 void	init_data(char *av[])
 {
 	int	i;
@@ -71,6 +72,7 @@ void	init_data(char *av[])
 	g_philo->time_to_sleep = ft_atoi(av[4]);
 	g_philo->num_of_tm_philo_must_eat = 0;
 	g_philo->start = 0;
+	g_philo->gettime = time_sub_from_start;
 	if (av[5])
 		g_philo->num_of_tm_philo_must_eat = ft_atoi(av[5]);
 	i = 0;
@@ -82,7 +84,17 @@ void	init_data(char *av[])
 		g_philo->sleeping[i++] = 0;
 	}
 }
-void take_fork_print(int philo, int fork)
+
+int	time_sub_from_start(void)
+{
+	struct timeval now;
+
+	gettimeofday(&now, NULL);
+	return (now.tv_usec - g_philo->start);
+}
+
+
+void takefork(int philo, int fork)
 {
 	struct timeval tm;
 
@@ -93,16 +105,16 @@ void take_fork_print(int philo, int fork)
 		printf("%08d %d has taken a fork %d\n", tm.tv_usec - tm.tv_usec, philo + 1, fork);
 		return ;
 	}
-	printf("%08d %d has taken a fork %d\n", tm.tv_usec - g_philo->start, philo + 1, fork);
+	printf("%08d %d has taken a fork %d\n", g_philo->gettime(), philo + 1, fork);
 }
 
-void	eating_print(int philo)
+void	eating(int philo)
 {
-	struct timeval tm;
+	int	eatingtime;
 
-	gettimeofday(&tm, NULL);
-	printf("%08d %d is eating\n", tm.tv_usec - g_philo->start, philo + 1);
-
+	eatingtime = g_philo->gettime();
+	g_philo->eating[philo] = eatingtime;
+	printf("%08d %d is eating\n", eatingtime, philo + 1);
 }
 
 void	*lunch_ft(void *x)
@@ -113,10 +125,13 @@ void	*lunch_ft(void *x)
 	while (1)
 	{
 		pthread_mutex_lock(&(g_philo->forks[i]));
-		take_fork_print(i, i + 1);
+		takefork(i, i + 1);
 		pthread_mutex_lock(&(g_philo->forks[(i + 1) % g_philo->philo_num]));
-		take_fork_print(i, (i + 1) % g_philo->philo_num + 1);
-		while ()
+		takefork(i, (i + 1) % g_philo->philo_num + 1);
+		eating(i);
+		while (1)
+		{
+		}
 	}
 
 	return (NULL);

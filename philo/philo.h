@@ -21,20 +21,24 @@
 int	ft_isdigit(int c);
 int	input_error(char *av[]);
 int ft_atoi(const char *str);
+int	time_sub_from_start(void);
+
+typedef int (*function)(void);
 
 typedef struct s_philo
 {
-    int philo_num;
-    pthread_t *threads;
-    pthread_mutex_t *forks;
-    int time_to_die;
-    int time_to_eat;
-    int time_to_sleep;
-    int num_of_tm_philo_must_eat;
-    int start;
+    function gettime;
     int *eating;
     int *sleeping;
     int *thinking;
+    int num_of_tm_philo_must_eat;
+    int philo_num;
+    int start;
+    int time_to_die;
+    int time_to_eat;
+    int time_to_sleep;
+    pthread_mutex_t *forks;
+    pthread_t *threads;
 }   t_philo;
 
 t_philo *g_philo;
