@@ -94,17 +94,10 @@ void	*lunch_ft(void *x)
 	int i;
 
 	i = *(int*)x;
-	pthread_mutex_lock(&(g_philo->lunch_thread));
 	pthread_mutex_lock(&(g_philo->forks[i]));
 	take_fork_print(i);
 	pthread_mutex_lock(&(g_philo->forks[i]));
 
-<<<<<<< HEAD
-=======
-	x = *(int*)i;
-	gettimeofday(&current_time, NULL);
-	printf("[%d] = %lld && %lld\n", x, (long long int)current_time.tv_sec, (long long int)current_time.tv_usec);
->>>>>>> 69203f0f5d6dbae3f0b6ae7076b1eb68d55c22f0
 	return (NULL);
 }
 
@@ -130,6 +123,7 @@ void		create_thread(void)
 		int *x = malloc(sizeof(int));
 		*x = i;
 		pthread_create(&(g_philo->threads[i]), NULL, &lunch_ft, &x);
+		usleep(1000);
 		i++;
 	}
 }
