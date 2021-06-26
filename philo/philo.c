@@ -57,36 +57,52 @@ int	ft_atoi(const char *str)
 
 void	init_data(char *av[])
 {
-	int	mtx;
+	int	i;
 
 	g_philo = malloc(sizeof(t_philo));
 	g_philo->philo_num = ft_atoi(av[1]);
 	g_philo->forks = malloc(sizeof(pthread_mutex_t) * g_philo->philo_num);
 	g_philo->threads = malloc(sizeof(pthread_t) * g_philo->philo_num);
+	g_philo->eating = malloc(sizeof(int) * g_philo->philo_num);
+	g_philo->sleeping = malloc(sizeof(int) * g_philo->philo_num);
+	g_philo->thinking = malloc(sizeof(int) * g_philo->philo_num);
 	g_philo->time_to_die = ft_atoi(av[2]);
 	g_philo->time_to_eat = ft_atoi(av[3]);
 	g_philo->time_to_sleep = ft_atoi(av[4]);
 	g_philo->num_of_tm_philo_must_eat = 0;
+	g_philo->start = 0;
 	if (av[5])
 		g_philo->num_of_tm_philo_must_eat = ft_atoi(av[5]);
-	mtx = 0;
-	while (mtx < g_philo->philo_num)
-		pthread_mutex_init(&(g_philo->forks[mtx++]), NULL);
-	pthread_mutex_init(&(g_philo->lunch_thread), NULL);
-	g_philo->time = 0;
+	i = 0;
+	while (i < g_philo->philo_num)
+	{
+		pthread_mutex_init(&(g_philo->forks[i]), NULL);
+		g_philo->eating[i] = 0;
+		g_philo->thinking[i] = 0;
+		g_philo->sleeping[i++] = 0;
+	}
 }
-void take_fork_print(int i)
+void take_fork_print(int philo, int fork)
 {
 	struct timeval tm;
 
 	gettimeofday(&tm, NULL);
-	if (g_philo->time == 0)
+	if (g_philo->start == 0)
 	{
-		g_philo->time = tm.tv_usec;
-		printf("%ld %d has taken a fork\n", tm.tv_usec - tm.tv_usec, i + 1);
+		g_philo->start = tm.tv_usec;
+		printf("%08d %d has taken a fork %d\n", tm.tv_usec - tm.tv_usec, philo + 1, fork);
 		return ;
 	}
-	printf("%ld %d has taken a fork\n", tm.tv_usec - g_philo->time, i + 1);
+	printf("%08d %d has taken a fork %d\n", tm.tv_usec - g_philo->start, philo + 1, fork);
+}
+
+void	eating_print(int philo)
+{
+	struct timeval tm;
+
+	gettimeofday(&tm, NULL);
+	printf("%08d %d is eating\n", tm.tv_usec - g_philo->start, philo + 1);
+
 }
 
 void	*lunch_ft(void *x)
@@ -94,17 +110,15 @@ void	*lunch_ft(void *x)
 	int i;
 
 	i = *(int*)x;
-	pthread_mutex_lock(&(g_philo->lunch_thread));
-	pthread_mutex_lock(&(g_philo->forks[i]));
-	take_fork_print(i);
-	pthread_mutex_lock(&(g_philo->forks[i]));
+	while (1)
+	{
+		pthread_mutex_lock(&(g_philo->forks[i]));
+		take_fork_print(i, i + 1);
+		pthread_mutex_lock(&(g_philo->forks[(i + 1) % g_philo->philo_num]));
+		take_fork_print(i, (i + 1) % g_philo->philo_num + 1);
+		while ()
+	}
 
-<<<<<<< HEAD
-=======
-	x = *(int*)i;
-	gettimeofday(&current_time, NULL);
-	printf("[%d] = %lld && %lld\n", x, (long long int)current_time.tv_sec, (long long int)current_time.tv_usec);
->>>>>>> 69203f0f5d6dbae3f0b6ae7076b1eb68d55c22f0
 	return (NULL);
 }
 
@@ -129,7 +143,8 @@ void		create_thread(void)
 	{
 		int *x = malloc(sizeof(int));
 		*x = i;
-		pthread_create(&(g_philo->threads[i]), NULL, &lunch_ft, &x);
+		pthread_create(&(g_philo->threads[i]), NULL, &lunch_ft, x);
+		usleep(100);
 		i++;
 	}
 }
@@ -142,7 +157,6 @@ int	main(int ac, char *av[])
 			return (1);
 		init_data(av);
 		create_thread();
-		// join_thread();
 		while(1);
 	}
 	else
