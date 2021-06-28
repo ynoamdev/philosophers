@@ -117,6 +117,15 @@ void	eating(int philo)
 	printf("%08d %d is eating\n", eatingtime, philo + 1);
 }
 
+void	sleeping(int philo)
+{
+	int	sleepingtime;
+
+	sleepingtime = g_philo->gettime();
+	g_philo->sleeping[philo] = sleepingtime;
+	printf("%08d %d is sleeping\n", sleepingtime, philo + 1);
+}
+
 void	*lunch_ft(void *x)
 {
 	int i;
@@ -129,9 +138,10 @@ void	*lunch_ft(void *x)
 		pthread_mutex_lock(&(g_philo->forks[(i + 1) % g_philo->philo_num]));
 		takefork(i, (i + 1) % g_philo->philo_num + 1);
 		eating(i);
-		while (1)
-		{
-		}
+		while (g_philo->gettime() - g_philo->eating[i] <= g_philo->time_to_eat);
+		pthread_mutex_unlock(&(g_philo->forks[i]));
+		pthread_mutex_unlock(&(g_philo->forks[(i + 1) % g_philo->philo_num]));
+		sleeping(i);
 	}
 
 	return (NULL);
