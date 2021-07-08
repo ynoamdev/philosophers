@@ -18,25 +18,25 @@
 # include <pthread.h>
 # include <sys/time.h>
 
-int	ft_isdigit(int c);
-int	input_error(char *av[]);
-int ft_atoi(const char *str);
-int	time_sub_from_start(void);
+int     ft_isdigit(int c);
+int     input_error(char *av[]);
+int     ft_atoi(const char *str);
+long long	time_sub_from_start(void);
 
-typedef int (*function)(void);
+typedef long long (*t_ll_ft)(void);
 
 typedef struct s_philo
 {
-    function gettime;
-    int *eating;
-    int *sleeping;
-    int *thinking;
+    t_ll_ft gettime;
     int num_of_tm_philo_must_eat;
     int philo_num;
-    int start;
-    int time_to_die;
-    int time_to_eat;
-    int time_to_sleep;
+    long long time_to_die;
+    long long time_to_eat;
+    long long time_to_sleep;
+    long long *eating;
+    long long *sleeping;
+    long long *start;
+    long long *thinking;
     pthread_mutex_t *forks;
     pthread_t *threads;
 }   t_philo;
