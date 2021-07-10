@@ -73,16 +73,22 @@ void	init_data(char *av[])
 	g_philo->time_to_sleep = ft_atoi(av[4]) * 1000;
 	g_philo->num_of_tm_philo_must_eat = 0;
 	if (av[5])
+	{
 		g_philo->num_of_tm_philo_must_eat = ft_atoi(av[5]);
+		g_philo->eat = malloc(sizeof(int) * g_philo->philo_num);
+	}
 	i = 0;
 	while (i < g_philo->philo_num)
 	{
 		pthread_mutex_init(&(g_philo->forks[i]), NULL);
 		g_philo->start[i] = 0;
+		if (g_philo->eat)
+			g_philo->eat[i] = 0;
 		g_philo->eating[i] = 0;
 		g_philo->thinking[i] = 0;
 		g_philo->sleeping[i++] = 0;
 	}
+	pthread_mutex_init(&g_philo->print, NULL);
 }
 
 long long	gettime(void)
@@ -96,7 +102,9 @@ long long	gettime(void)
 
 void takefork(int philo, int fork)
 {
+	pthread_mutex_lock(&g_philo->print);
 	printf("%015lld %d has taken a fork\n", gettime() / 1000, philo + 1);
+	pthread_mutex_unlock(&g_philo->print);
 }
 
 void	eating(int philo)
@@ -104,7 +112,9 @@ void	eating(int philo)
 	int	eatingtime;
 
 	g_philo->eating[philo] = gettime();
+	pthread_mutex_lock(&g_philo->print);
 	printf("%015lld %d is eating\n", gettime() / 1000, philo + 1);
+	pthread_mutex_unlock(&g_philo->print);
 }
 
 void	sleeping(int philo)
@@ -112,33 +122,26 @@ void	sleeping(int philo)
 	int	sleepingtime;
 
 	g_philo->sleeping[philo] = gettime();
+	pthread_mutex_lock(&g_philo->print);
 	printf("%015lld %d is sleeping\n", gettime() / 1000, philo + 1);
+	pthread_mutex_unlock(&g_philo->print);
 }
 void	thinking(int philo)
 {
+	pthread_mutex_lock(&g_philo->print);
 	printf("%015lld %d is thinking\n", gettime() / 1000, philo + 1);
+	pthread_mutex_unlock(&g_philo->print);
 }
 
-// void 	print(int philo)
-// {
-// 	pthread_mutex_lock(&g_philo->print);
-// 	printf("%015lld %d died\n", gettime() / 1000, philo + 1);
-
-// }
-void	died(int philo)
+void 	print(int philo)
 {
-	int i;
-
-	i = 0;
-	while (i < g_philo->philo_num)
-	{
-	}
+	pthread_mutex_lock(&g_philo->print);
 	printf("%015lld %d died\n", gettime() / 1000, philo + 1);
 }
 
 void	*lunch_ft(void *x)
 {
-	int i;
+	int		i;
 
 	i = *(int*)x;
 	while (1)
@@ -148,6 +151,7 @@ void	*lunch_ft(void *x)
 		pthread_mutex_lock(&(g_philo->forks[(i + 1) % g_philo->philo_num]));
 		takefork(i, (i + 1) % g_philo->philo_num + 1);
 		eating(i);
+		g_philo->eat[i] += 1;
 		while (gettime() - g_philo->eating[i] <= g_philo->time_to_eat);
 		pthread_mutex_unlock(&(g_philo->forks[i]));
 		pthread_mutex_unlock(&(g_philo->forks[(i + 1) % g_philo->philo_num]));
@@ -156,6 +160,32 @@ void	*lunch_ft(void *x)
 		thinking(i);
 	}
 	return (NULL);
+}
+
+int		monitor_of_philos(void)
+{
+	int	i;
+
+	i = 0;
+	int count = 0;
+	while (1)
+	{
+		i = 0;
+		while (i < g_philo->philo_num)
+		{
+			if(gettime() - g_philo->eating[i] >= g_philo->time_to_die)
+			{
+				print(i);
+				return (1);
+			}
+			if (g_philo->eat[i] >= g_philo->num_of_tm_philo_must_eat)
+				count++;
+			i++;
+		}
+		if (count == g_philo->philo_num + 1)
+			return 1;
+	}
+	return (1);
 }
 
 void		create_thread(void)
@@ -174,30 +204,11 @@ void		create_thread(void)
 	}
 }
 
-int 	monitor_of_philos(void)
-{
-	int	i;
-
-	i = 0;
-	while (1)
-	{
-		i = 0;
-		while (i < g_philo->philo_num)
-		{
-			if(gettime() - g_philo->eating[i] >= g_philo->time_to_die)
-			{
-				// print(i);
-				died(i);
-				return 1;
-			}
-			i++;
-		}
-	}
-}
 
 int	main(int ac, char *av[])
 {
-	pthread_mutex_init(&g_philo->print, NULL);
+	int i;
+
 	if (ac == 6 || ac == 5)
 	{
 		if (input_error(av))

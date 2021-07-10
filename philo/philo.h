@@ -27,13 +27,14 @@ typedef struct s_philo
 {
     int num_of_tm_philo_must_eat;
     int philo_num;
-    long long time_to_die;
-    long long time_to_eat;
-    long long time_to_sleep;
     long long *eating;
     long long *sleeping;
     long long *start;
     long long *thinking;
+    int *eat;
+    long long time_to_die;
+    long long time_to_eat;
+    long long time_to_sleep;
     pthread_mutex_t *forks;
     pthread_mutex_t print;
     pthread_t *threads;
