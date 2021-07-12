@@ -6,7 +6,7 @@
 /*   By: ynoam <ynoam@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 11:16:48 by ynoam             #+#    #+#             */
-/*   Updated: 2021/06/21 11:55:30 by ynoam            ###   ########.fr       */
+/*   Updated: 2021/07/12 15:17:09 by ynoam            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,11 @@ int			ft_isdigit(int c);
 int			input_error(char *av[]);
 int			ft_atoi(const char *str);
 void		init_data(char *av[]);
-void		init_data2(char *av[]);
+void		init_data2(void);
 long long	gettime(void);
-void		takefork(int philo, int fork);
-void		eating(int philo, int *j);
-void		sleeping(int philo);
+void		takefork(int philo);
+void		eating(int philo);
+void		sleeping(int philo, int *j);
 void		thinking(int philo);
 void		print(int philo);
 void		*lunch_ft(void *x);

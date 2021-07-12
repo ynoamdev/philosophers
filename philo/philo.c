@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ynoam <marvin@42.fr>                       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/07/12 15:17:01 by ynoam             #+#    #+#             */
+/*   Updated: 2021/07/12 15:17:06 by ynoam            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
-void	init_data2(char *av[])
+void	init_data2(void)
 {
 	int	i;
 
@@ -27,16 +39,17 @@ void	*lunch_ft(void *x)
 	while (1)
 	{
 		pthread_mutex_lock(&(g_philo->forks[i]));
-		takefork(i, i + 1);
+		takefork(i);
 		pthread_mutex_lock(&(g_philo->forks[(i + 1) % g_philo->philo_num]));
-		takefork(i, (i + 1) % g_philo->philo_num + 1);
-		*j = *j + 1;
-		eating(i, j);
+		takefork(i);
+		eating(i);
 		while (gettime() - g_philo->eating[i] <= g_philo->time_to_eat)
 			;
 		pthread_mutex_unlock(&(g_philo->forks[i]));
 		pthread_mutex_unlock(&(g_philo->forks[(i + 1) % g_philo->philo_num]));
-		sleeping(i);
+		*j = *j + 1;
+		sleeping(i, j);
+		usleep(g_philo->time_to_sleep - 10000);
 		while (gettime() - g_philo->sleeping[i] <= g_philo->time_to_sleep)
 			;
 		thinking(i);
@@ -87,13 +100,12 @@ void	create_thread(void)
 
 int	main(int ac, char *av[])
 {
-	int	i;
-
 	if (ac == 6 || ac == 5)
 	{
 		if (input_error(av))
 			return (1);
 		init_data(av);
+		init_data2();
 		create_thread();
 		return (monitor_of_philos());
 	}
