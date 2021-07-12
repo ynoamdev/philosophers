@@ -41,6 +41,7 @@ int			ft_isdigit(int c);
 int			input_error(char *av[]);
 int			ft_atoi(const char *str);
 void		init_data(char *av[]);
+void		init_data2(char *av[]);
 long long	gettime(void);
 void		takefork(int philo, int fork);
 void		eating(int philo, int *j);

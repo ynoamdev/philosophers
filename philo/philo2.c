@@ -58,8 +58,6 @@ int	ft_atoi(const char *str)
 
 void	init_data(char *av[])
 {
-	int	i;
-
 	g_philo = malloc(sizeof(t_philo));
 	g_philo->philo_num = ft_atoi(av[1]);
 	g_philo->forks = malloc(sizeof(pthread_mutex_t) * g_philo->philo_num);
@@ -75,16 +73,7 @@ void	init_data(char *av[])
 	g_philo->eat = 0;
 	if (av[5])
 		g_philo->num_of_tm_philo_must_eat = ft_atoi(av[5]);
-	i = 0;
-	while (i < g_philo->philo_num)
-	{
-		pthread_mutex_init(&(g_philo->forks[i]), NULL);
-		g_philo->start[i] = 0;
-		g_philo->eating[i] = 0;
-		g_philo->thinking[i] = 0;
-		g_philo->sleeping[i++] = 0;
-	}
-	pthread_mutex_init(&g_philo->print, NULL);
+	init_data2(av);
 }
 
 long long	gettime(void)

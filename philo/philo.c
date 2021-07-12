@@ -1,5 +1,21 @@
 #include "philo.h"
 
+void	init_data2(char *av[])
+{
+	int	i;
+
+	i = 0;
+	while (i < g_philo->philo_num)
+	{
+		pthread_mutex_init(&(g_philo->forks[i]), NULL);
+		g_philo->start[i] = 0;
+		g_philo->eating[i] = 0;
+		g_philo->thinking[i] = 0;
+		g_philo->sleeping[i++] = 0;
+	}
+	pthread_mutex_init(&g_philo->print, NULL);
+}
+
 void	*lunch_ft(void *x)
 {
 	int	i;
